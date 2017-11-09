@@ -19,12 +19,16 @@ def run(filename):
     smooth_vals = smoothValues(reader)
 
     peaks = findPeaks(smooth_vals)
-    print peaks
-    print len(peaks)
+    #print peaks
+    #print len(peaks)
 
     peaks = removeFalsePositives(peaks)
 
-    print peaks
+    print "time, average acceleration:"
+    for peak in peaks:
+        print peak
+    print
+    print "Total steps:"
     print len(peaks)
 
 def smoothValues(reader):
