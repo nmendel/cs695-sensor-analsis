@@ -1,0 +1,34 @@
+Part 1 - Hill Climbing algorithm:
+
+5. [20 points] ANSWERS - in this document, answer the following questions
+- Describe in details what approach/algorithm have you implemented for step
+counting. Refer to P1 and P2 source codes and explain how your code
+implements your algorithm. For example, if you are using peak detection
+algorithm, point to segments of codes in P1 and P2 showing its implementation
+
+- Explain what changes (if any) you had to make in your
+algorithm/implementation for counting steps in “walk-shoe.csv” and
+“walk-pocket.csv”
+The only changes made to make the walk.py code work for the pocket data was to change the acceleration threshold required to find a peak and to change the acceleration direction used. The movement was much less dramatic while in the users pocket, so the threshold had to be set at a lower value. Also, the phone was pointed in a different direction while in the users pocket, up-and-down, so the Z acceleration was used instead of Y. The python script set these values automatically based on the name of the passed-in csv file.
+
+
+
+Part 2 - Heading Detection:
+6.
+a. How many turns does the user take during the walk? How do you determine if
+there is a turn using the trace?
+To find turns using the trace, first you look for dramatic changes to the heading values (using a scatterplot is highly recommended). Next you compare those times to the changes in acceleration (in the Y and Z directions in this case). If there is an acceleration change that lines up with a heading change, you know that the user turned at that time. 
+b. List the exact times when the turn event happen.
+21 seconds (21358 ms is first indication of turn) and 39 seconds (39398 ms).
+
+
+7.
+a. Are there any instances of magnetic interference in the trace?
+Yes
+b. If so, how many?
+2
+c. How do you figure out that there is magnetic interference using the trace?
+There are 2 times where the heading direction changes and then quickly changes back to what it was previously. At first glance, it appears that the user turned and then turned back, but the accelerometer data at these times does not show any movement of that sort. Because of a. the changed heading, b. the fact that it changes back to where it was before, and c. the fact that this movement is not evident in the accelerometer data, it is safe to conclude that these instances are magnetic interference.
+d. List the exact times when the magnetic interference events happen.
+The first event starts with the heading dropping for a brief period at 12965 ms, followed by going up dramatically at 13398 ms. It stays there (with some fluctuation) until returning to around where it was previously at 17097 ms.
+The second event jumps up from the heading it was at, though not as quickly, starting at 30219 ms. It drops back down to where it was before at around 32037 ms.
