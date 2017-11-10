@@ -1,15 +1,23 @@
-#! /usr/bin/python
+AssertionError#! /usr/bin/python
 
 import csv
 from optparse import OptionParser
 
+# how many acceleration values per window for smoothing purposes
+VALUES_PER_WINDOW = 15
+
 THRESHOLD_SHOE = 8
-TIME_THRESHOLD_SHOE = 500
+TIME_THRESHOLD_SHOE = 300
 
 THRESHOLD_WALK = 2.8
-TIME_THRESHOLD_WALK = 500
+TIME_THRESHOLD_WALK = 300
 
 def run(filename):
+    """
+    Read the trace file, skip the header,
+    smooth the values over a 300ms window,
+    find the peaks, remove local peaks, print results
+    """
     fh = open(filename, 'r')
     reader = csv.reader(fh)
 
@@ -24,19 +32,17 @@ def run(filename):
 
     peaks = removeFalsePositives(peaks)
 
-    print "time, average acceleration:"
-    for peak in peaks:
-        print peak
-    print
-    print "Total steps:"
-    print len(peaks)
+    printResults(peaks)
 
 def smoothValues(reader):
+    """
+    Smooth the values by using 300 ms averages instead of the raw values
+    """
     window = []
     values = []
 
     for line in reader:
-        if len(window) < 15:
+        if len(window) < VALUES_PER_WINDOW:
             window.append(float(line[ACCEL_DIRECTION_INDEX]))
             continue
 
@@ -46,6 +52,9 @@ def smoothValues(reader):
     return values
     
 def findPeaks(vals):
+    """
+    Find all values over the threshold
+    """
     peaks = []
     lastVal = 0.0
     localMax = 0.0
@@ -56,6 +65,10 @@ def findPeaks(vals):
             localMax = val
             localMaxTime = time
 
+        # if the value is over the threshold
+        # and is smaller than the localMax
+        # AND the next value is also smaller than the local max
+        # then consider this to be a peak and reset local max
         if localMax > THRESHOLD and val < lastVal \
            and i + 1 < len(vals) - 1 and vals[i][1] > vals[i+1][1]:
             # Found a peak
@@ -67,6 +80,10 @@ def findPeaks(vals):
     return peaks
 
 def removeFalsePositives(peaks):
+    """
+    If there are multiple local peaks within 300 ms of each other,
+    only keep the larger one since that is too short of time for a step
+    """
     good_peaks = []
     lastTime = 0
     lastVal = 0.0
@@ -95,14 +112,25 @@ def removeFalsePositives(peaks):
 
     return good_peaks
 
+
+def printResults(peaks):
+    """
+    Print each peak and the total number of steps
+    """
+    print "time, average acceleration:"
+    for peak in peaks:
+        print peak
+    print
+    print "Total steps:"
+    print len(peaks)
+
+
 def average(ls):
     return sum(ls) / len(ls)
 
 
 if __name__ == '__main__':
     parser = OptionParser()
-    parser.add_option("-f", "--file", dest="filename",
-                      help="write report to FILE", metavar="FILE")
 
     (options, args) = parser.parse_args()
 

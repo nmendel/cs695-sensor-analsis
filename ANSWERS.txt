@@ -1,14 +1,13 @@
 Part 1 - Hill Climbing algorithm:
 
-5. [20 points] ANSWERS - in this document, answer the following questions
-- Describe in details what approach/algorithm have you implemented for step
-counting. Refer to P1 and P2 source codes and explain how your code
-implements your algorithm. For example, if you are using peak detection
-algorithm, point to segments of codes in P1 and P2 showing its implementation
+Both P1 and P2 use the walk.py python script to detect the peaks within the trace files. walk.py is a python implementation of the hill climbing algorithm. It works as follows:
+0. '__main__' code section - at bottom - Grab the passed-in filename, which is expected to be the only argument, and pass it to the run function. This also sets the average acceleration threshold and acceleration direction based on which trace file was passed in.
+1. run - open the csv file, skip the headers row, then run the rest of the steps
+2. smoothValues - loop over the values of the trace file, creating and returning a new list containing the average of every 300 ms window. Note that which acceleration direction (x,y,z) to use is based on which file was passed-in.
+3. findPeaks - Do the hill climbing algorithm. Loop through the values, keeping a local max. If the value found is lower than the local max, look ahead one value and compare that to the local max as well. If both are lower than the local max, save it as a peak and set local max to 0 (assuming local max is greater than the value threshold).
+4. removeFalsePositives - If there are multiple local peaks within 300 ms of each other, only keep the larger one since that is too short of time for a step
+5. printResults - Print each peak and the total number of steps
 
-- Explain what changes (if any) you had to make in your
-algorithm/implementation for counting steps in “walk-shoe.csv” and
-“walk-pocket.csv”
 The only changes made to make the walk.py code work for the pocket data was to change the acceleration threshold required to find a peak and to change the acceleration direction used. The movement was much less dramatic while in the users pocket, so the threshold had to be set at a lower value. Also, the phone was pointed in a different direction while in the users pocket, up-and-down, so the Z acceleration was used instead of Y. The python script set these values automatically based on the name of the passed-in csv file.
 
 
